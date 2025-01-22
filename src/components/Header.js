@@ -33,6 +33,33 @@ const socials = [
 ];
 
 const Header = () => {
+  const headerRef = useRef(null);
+  const lastScrollY = useRef(0);
+  const isScrollingDown = useRef(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (headerRef.current) {
+        if (currentScrollY > lastScrollY.current) {
+          // Scrolling down
+          headerRef.current.style.transform = "translateY(-200px)";
+          isScrollingDown.current = true;
+        } else {
+          // Scrolling up
+          headerRef.current.style.transform = "translateY(0)";
+          isScrollingDown.current = false;
+        }
+        lastScrollY.current = currentScrollY;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const handleClick = (anchor) => () => {
     const id = `${anchor}-section`;
     const element = document.getElementById(id);
@@ -46,6 +73,7 @@ const Header = () => {
 
   return (
     <Box
+      ref={headerRef}
       position="fixed"
       top={0}
       left={0}
@@ -83,6 +111,5 @@ const Header = () => {
     </Box>
   );
 };
-
 
 export default Header;
